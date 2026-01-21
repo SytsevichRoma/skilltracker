@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Goals</title>
+</head>
+<body>
+  <h2>Your goals</h2>
+
+  <p>
+    <a href="/goals/create">+ Create goal</a> |
+    <a href="/logout">Logout</a>
+  </p>
+
+  {% if goals %}
+    <ul>
+      {% for g in goals %}
+        <li>
+          <b>{{ g.title }}</b>
+          {% if g.description %}- {{ g.description }}{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No goals yet 😅</p>
+  {% endif %}
+</body>
+</html>
