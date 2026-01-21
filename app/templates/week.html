@@ -24,6 +24,24 @@
       </summary>
 
       <div style="padding: 10px 0;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <form method="post" action="{{ url_for('tasks.copy_day_to_tomorrow', day_str=d.isoformat()) }}">
+            <button type="submit">Copy to tomorrow</button>
+          </form>
+
+          <form method="post" action="{{ url_for('tasks.mark_all_done', day_str=d.isoformat()) }}"
+                onsubmit="return confirm('Позначити всі задачі дня як Done?');">
+            <button type="submit">Mark all done</button>
+          </form>
+
+          <form method="post" action="{{ url_for('tasks.clear_day', day_str=d.isoformat()) }}"
+                onsubmit="return confirm('Видалити всі задачі цього дня?');">
+            <button type="submit">Clear day 🗑️</button>
+          </form>
+        </div>
+
+        <hr>
+
         <h4>Add task</h4>
         <form method="post" action="{{ url_for('tasks.create_task') }}">
           <input type="hidden" name="planned_for" value="{{ d.isoformat() }}">
@@ -53,7 +71,7 @@
         <hr>
 
         {% for code in ["DREAM","GOAL","MUST"] %}
-          <h4>{{ type_label(code) }}</h4>
+          <h4>{{ "Мрії" if code=="DREAM" else ("Мети" if code=="GOAL" else "Обов'язкові") }}</h4>
 
           {% set items = day.groups[code] %}
           {% if items %}
@@ -67,9 +85,23 @@
                     <span style="margin-left:10px;">(до {{ t.due_date.isoformat() }})</span>
                   {% endif %}
 
+                  <!-- move (7 days select) -->
+                  <form method="post" action="{{ url_for('tasks.move_task', task_id=t.id) }}" style="display:inline;">
+                    <select name="planned_for">
+                      {% for dd in days %}
+                        <option value="{{ dd.isoformat() }}" {% if dd==d %}selected{% endif %}>
+                          {{ dd.strftime("%a %d") }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                    <button type="submit">Move</button>
+                  </form>
+
                   <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}" style="display:inline;">
                     <button type="submit">Toggle</button>
                   </form>
+
+                  <a href="{{ url_for('tasks.edit_task', task_id=t.id) }}">Edit</a>
 
                   <form method="post" action="{{ url_for('tasks.delete_task', task_id=t.id) }}"
                         style="display:inline;" onsubmit="return confirm('Видалити задачу?');">
