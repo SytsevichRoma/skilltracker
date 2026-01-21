@@ -1,28 +1,216 @@
 <!doctype html>
-<html>
+<html lang="uk">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}SkillTracker{% endblock %}</title>
+
+  <style>
+    :root{
+      --bg:#f5f5f7;
+      --card:#ffffffcc;
+      --text:#1d1d1f;
+      --muted:#6e6e73;
+      --line:rgba(0,0,0,.08);
+      --shadow:0 18px 40px rgba(0,0,0,.08);
+      --shadow-sm:0 10px 24px rgba(0,0,0,.06);
+      --r:18px;
+      --r2:14px;
+      --blue:#0a84ff;
+      --blue2:rgba(10,132,255,.12);
+      --red2:rgba(255,59,48,.14);
+      --green2:rgba(52,199,89,.14);
+      --yellow2:rgba(255,204,0,.16);
+      --pill:rgba(0,0,0,.06);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
+    }
+
+    .app{
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 18px 16px 30px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 16px;
+      min-height: 100vh;
+    }
+
+    .sidebar{
+      background: rgba(255,255,255,.65);
+      border:1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow-sm);
+      padding: 14px;
+      position: sticky;
+      top: 14px;
+      height: fit-content;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 8px 8px 14px;
+    }
+    .logo{
+      width:34px;height:34px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(10,132,255,.25), rgba(52,199,89,.18));
+      border:1px solid var(--line);
+      box-shadow: 0 10px 18px rgba(0,0,0,.06);
+    }
+    .brand-title{font-weight:900; letter-spacing:-.2px}
+
+    .nav{
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .nav a{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid transparent;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 800;
+      background: transparent;
+    }
+    .nav a:hover{
+      background: rgba(255,255,255,.8);
+      border-color: var(--line);
+    }
+    .nav a.active{
+      background: rgba(10,132,255,.12);
+      border: 1px solid rgba(10,132,255,.20);
+      color: #0a63c7;
+    }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .pad{ padding: 16px; }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .h1{ margin:0; font-size:28px; font-weight:900; letter-spacing:-.6px; }
+    .muted{ color: var(--muted); font-size: 13px; }
+
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      cursor:pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform .06s ease, background .12s ease;
+    }
+    .btn:hover{ background: rgba(255,255,255,.92); }
+    .btn:active{ transform: scale(.985); }
+    .btn-primary{
+      background: var(--blue2);
+      border-color: rgba(10,132,255,.20);
+      color: #0a63c7;
+    }
+    .btn-danger{
+      background: var(--red2);
+      border-color: rgba(255,59,48,.20);
+      color: #b42318;
+    }
+
+    .input, .select{
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 10px 20px rgba(0,0,0,.05);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .row{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .row > *{ flex: 1; min-width: 160px; }
+
+    .divider{ height: 1px; background: var(--line); margin: 14px 0; }
+
+    .flash{
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border-radius: var(--r2);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.85);
+      box-shadow: var(--shadow-sm);
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px){
+      .app{ grid-template-columns: 1fr; }
+      .sidebar{ position: static; }
+    }
+  </style>
 </head>
 <body>
 
-  <p>
-    <a href="{{ url_for('tasks.week_view') }}">7 days</a> |
-    <a href="{{ url_for('goals.list_goals') }}">Goals</a>
-  </p>
-  <hr>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div class="brand-title">SkillTracker</div>
+      </div>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul>
-        {% for category, message in messages %}
-          <li><b>[{{ category }}]</b> {{ message }}</li>
-        {% endfor %}
-      </ul>
-      <hr>
-    {% endif %}
-  {% endwith %}
+      <nav class="nav">
+        <a href="{{ url_for('goals.list_goals') }}"
+           class="{% if request.path.startswith('/goals') %}active{% endif %}">
+          🎯 Goals
+        </a>
+        <a href="{{ url_for('tasks.week_view') }}"
+           class="{% if request.path.startswith('/week') %}active{% endif %}">
+          🗓️ Week
+        </a>
+        <a href="{{ url_for('auth.logout') }}">🚪 Logout</a>
+      </nav>
+    </aside>
 
-  {% block content %}{% endblock %}
+    <main>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash"><b>[{{ category }}]</b> {{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
 </body>
 </html>

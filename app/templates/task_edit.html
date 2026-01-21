@@ -1,50 +1,48 @@
 {% extends "base.html" %}
-{% block title %}Edit task{% endblock %}
+{% block title %}Edit Task{% endblock %}
 
 {% block content %}
-  <p><a href="{{ url_for('tasks.week_view') }}">← Back to week</a></p>
+<div class="card pad">
+  <div class="top">
+    <div>
+      <h1 class="h1">Edit Task</h1>
+      <div class="muted">Зміни назву / день / тип / дедлайн / goal.</div>
+    </div>
+    <a class="btn" href="{{ url_for('tasks.week_view') }}" style="text-decoration:none;">← Back</a>
+  </div>
 
-  <h2>Edit task</h2>
+  <div class="divider"></div>
 
   <form method="post">
-    <label>
-      Title:
-      <input type="text" name="title" value="{{ task.title }}" required>
-    </label>
-    <br><br>
+    <div class="row">
+      <input class="input" type="text" name="title" value="{{ task.title }}" required>
+      <input class="input" type="date" name="planned_for"
+             value="{{ task.planned_for.isoformat() if task.planned_for else '' }}" required>
 
-    <label>
-      Planned for:
-      <input type="date" name="planned_for" value="{{ task.planned_for.isoformat() if task.planned_for else '' }}" required>
-    </label>
-    <br><br>
-
-    <label>
-      Type:
-      <select name="task_type">
+      <select class="select" name="task_type">
         {% for key, label in task_types %}
           <option value="{{ key }}" {% if (task.task_type or 'MUST')==key %}selected{% endif %}>{{ label }}</option>
         {% endfor %}
       </select>
-    </label>
-    <br><br>
+    </div>
 
-    <label>
-      Goal:
-      <select name="goal_id" required>
+    <div style="height:10px;"></div>
+
+    <div class="row">
+      <select class="select" name="goal_id" required>
         {% for g in goals %}
           <option value="{{ g.id }}" {% if g.id==task.goal_id %}selected{% endif %}>{{ g.title }}</option>
         {% endfor %}
       </select>
-    </label>
-    <br><br>
 
-    <label>
-      Due date:
-      <input type="date" name="due_date" value="{{ task.due_date.isoformat() if task.due_date else '' }}">
-    </label>
-    <br><br>
+      <input class="input" type="date" name="due_date"
+             value="{{ task.due_date.isoformat() if task.due_date else '' }}">
+    </div>
 
-    <button type="submit">Save</button>
+    <div style="margin-top: 14px; display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-primary" type="submit">Save</button>
+      <a class="btn" href="{{ url_for('tasks.week_view') }}" style="text-decoration:none;">Cancel</a>
+    </div>
   </form>
+</div>
 {% endblock %}

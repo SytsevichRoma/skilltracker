@@ -1,124 +1,388 @@
 {% extends "base.html" %}
-{% block title %}7 days{% endblock %}
+{% block title %}Week Planner{% endblock %}
 
 {% block content %}
-  <h2>План на 7 днів</h2>
+<style>
+  .today-head{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .kpi{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+    font-weight:900;
+  }
 
-  <p>
-    <a href="{{ url_for('goals.list_goals') }}">Goals</a> |
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
-  </p>
+  .progress{
+    height: 10px;
+    width: 100%;
+    background: rgba(0,0,0,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .progress > div{
+    height: 100%;
+    background: rgba(10,132,255,.60);
+    width: 0%;
+  }
+
+  .section{
+    border:1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,.72);
+    box-shadow: var(--shadow-sm);
+    overflow:hidden;
+    margin-top: 12px;
+  }
+  .section summary{
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor:pointer;
+    font-weight: 900;
+  }
+  .section summary::-webkit-details-marker{display:none;}
+  .chev{ opacity:.6; font-weight:900; }
+
+  .tasks-list{ padding: 10px 12px 12px; }
+
+  .task-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+    padding: 10px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,.07);
+    background: rgba(255,255,255,.86);
+    box-shadow: 0 10px 18px rgba(0,0,0,.05);
+    margin-bottom: 10px;
+  }
+  .left{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    min-width: 220px;
+    flex: 1;
+  }
+
+  .check{
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid rgba(0,0,0,.18);
+    display:inline-block;
+  }
+  .check.done{
+    border-color: rgba(10,132,255,.55);
+    background: rgba(10,132,255,.22);
+  }
+
+  .task-title{
+    font-weight: 900;
+    letter-spacing: -.2px;
+    font-size: 14px;
+  }
+  .task-title.done{
+    opacity: .55;
+    text-decoration: line-through;
+  }
+
+  .pills{
+    display:flex; gap: 8px; flex-wrap:wrap; justify-content:flex-end; align-items:center;
+  }
+  .pill{
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--pill);
+    border: 1px solid rgba(0,0,0,.08);
+    font-size: 12px;
+    font-weight: 900;
+    color: rgba(0,0,0,.72);
+    white-space: nowrap;
+  }
+  .pill-goal{ background: rgba(10,132,255,.12); border-color: rgba(10,132,255,.18); color:#0a63c7; }
+  .pill-dead{ background: rgba(255,59,48,.14); border-color: rgba(255,59,48,.20); color:#b42318; }
+  .pill-type{ background: rgba(0,0,0,.05); }
+
+  .row-actions{
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; align-items:center;
+  }
+
+  .days-list{
+    margin-top: 14px;
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .day-row{
+    border:1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,.66);
+    box-shadow: var(--shadow-sm);
+    overflow:hidden;
+  }
+  .day-row summary{
+    list-style:none;
+    padding: 12px 14px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+    font-weight: 900;
+  }
+  .day-row summary::-webkit-details-marker{display:none;}
+  .day-mini{
+    display:flex; flex-direction:column; gap:6px; min-width: 220px;
+  }
+  .mini-kpi{
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  .add-wrap{
+    border:1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,.72);
+    box-shadow: var(--shadow-sm);
+    padding: 14px;
+    margin-top: 12px;
+  }
+</style>
+
+<div class="card pad">
+  <div class="top">
+    <div>
+      <h1 class="h1">Week Planner</h1>
+      <div class="muted">Плануй тиждень → відмічай прогрес → перенось / редагуй.</div>
+    </div>
+
+    <button class="btn btn-primary" type="button"
+            onclick="document.getElementById('today-add').scrollIntoView({behavior:'smooth'});">
+      + Add Task
+    </button>
+  </div>
 
   {% if not goals %}
-    <p><b>Спочатку створи хоча б одну Goal</b>, бо задача має належати до Goal.</p>
-    <p><a href="{{ url_for('goals.create_goal') }}">+ Create goal</a></p>
-    <hr>
+    <div class="flash"><b>Створи хоча б одну Goal</b>, бо задача має належати до Goal.</div>
   {% endif %}
 
-  {% for d in days %}
-    {% set day = tasks_by_day[d] %}
-    <details {% if loop.first %}open{% endif %}>
-      <summary style="cursor:pointer;">
-        <b>{{ d.strftime("%a, %d %b %Y") }}</b>
-        — {{ day.done }}/{{ day.total }} ({{ day.percent }}%)
-      </summary>
+  {# TODAY card = перший день #}
+  {% set today = days[0] %}
+  {% set td = tasks_by_day[today] %}
 
-      <div style="padding: 10px 0;">
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <form method="post" action="{{ url_for('tasks.copy_day_to_tomorrow', day_str=d.isoformat()) }}">
-            <button type="submit">Copy to tomorrow</button>
-          </form>
-
-          <form method="post" action="{{ url_for('tasks.mark_all_done', day_str=d.isoformat()) }}"
-                onsubmit="return confirm('Позначити всі задачі дня як Done?');">
-            <button type="submit">Mark all done</button>
-          </form>
-
-          <form method="post" action="{{ url_for('tasks.clear_day', day_str=d.isoformat()) }}"
-                onsubmit="return confirm('Видалити всі задачі цього дня?');">
-            <button type="submit">Clear day 🗑️</button>
-          </form>
+  <div class="card pad" style="box-shadow: var(--shadow-sm);">
+    <div class="today-head">
+      <div>
+        <div style="font-weight: 1000; font-size: 18px; letter-spacing: -.3px;">
+          Today, {{ today.strftime("%b %d") }}
         </div>
+        <div class="muted" style="margin-top:4px;">{{ today.strftime("%A") }}</div>
+      </div>
 
-        <hr>
+      <div class="kpi">
+        <div class="muted">{{ td.done }}/{{ td.total }} Done ({{ td.percent }}%)</div>
+      </div>
+    </div>
 
-        <h4>Add task</h4>
-        <form method="post" action="{{ url_for('tasks.create_task') }}">
-          <input type="hidden" name="planned_for" value="{{ d.isoformat() }}">
+    <div style="margin-top:10px;">
+      <div class="progress" data-progress="{{ td.percent }}">
+        <div></div>
+      </div>
+    </div>
 
-          <input type="text" name="title" placeholder="Task title..." required>
+    <div class="add-wrap" id="today-add">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <div style="font-weight: 1000; letter-spacing:-.2px;">Add task for Today</div>
+        <div class="muted" style="font-weight:800;">Quick add</div>
+      </div>
 
-          <select name="task_type">
+      <div class="divider"></div>
+
+      <form method="post" action="{{ url_for('tasks.create_task') }}">
+        <input type="hidden" name="planned_for" value="{{ today.isoformat() }}">
+
+        <div class="row">
+          <input class="input" type="text" name="title" placeholder="Task title..." required>
+
+          <select class="select" name="task_type">
             {% for key, label in task_types %}
               <option value="{{ key }}">{{ label }}</option>
             {% endfor %}
           </select>
 
-          <select name="goal_id" {% if not goals %}disabled{% endif %} required>
+          <select class="select" name="goal_id" {% if not goals %}disabled{% endif %} required>
             {% for g in goals %}
               <option value="{{ g.id }}">{{ g.title }}</option>
             {% endfor %}
           </select>
 
-          <label>
-            Дедлайн до:
-            <input type="date" name="due_date">
-          </label>
+          <input class="input" type="date" name="due_date">
+        </div>
 
-          <button type="submit" {% if not goals %}disabled{% endif %}>Add</button>
+        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="btn" type="submit" {% if not goals %}disabled{% endif %}>Add</button>
+        </div>
+      </form>
+
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+        <form method="post" action="{{ url_for('tasks.copy_day_to_tomorrow', day_str=today.isoformat()) }}">
+          <button class="btn" type="submit">Copy to tomorrow</button>
         </form>
 
-        <hr>
+        <form method="post" action="{{ url_for('tasks.mark_all_done', day_str=today.isoformat()) }}"
+              onsubmit="return confirm('Позначити всі задачі today як Done?');">
+          <button class="btn btn-primary" type="submit">Mark all done</button>
+        </form>
 
-        {% for code in ["DREAM","GOAL","MUST"] %}
-          <h4>{{ "Мрії" if code=="DREAM" else ("Мети" if code=="GOAL" else "Обов'язкові") }}</h4>
+        <form method="post" action="{{ url_for('tasks.clear_day', day_str=today.isoformat()) }}"
+              onsubmit="return confirm('Видалити всі задачі today?');">
+          <button class="btn btn-danger" type="submit">Clear</button>
+        </form>
+      </div>
+    </div>
 
-          {% set items = day.groups[code] %}
+    {# 3 секції як на мокапі #}
+    {% for code, label in [("DREAM","Dreams"),("GOAL","Goals"),("MUST","Must")] %}
+      {% set items = td.groups[code] %}
+      <details class="section" open>
+        <summary>
+          <span>{{ label }}</span>
+          <span class="chev">⌄</span>
+        </summary>
+
+        <div class="tasks-list">
           {% if items %}
-            <ul>
-              {% for t in items %}
-                <li>
-                  {% if t.is_done %}✅{% else %}⏳{% endif %}
-                  <b>{{ t.title }}</b>
+            {% for t in items %}
+              <div class="task-row">
+                <div class="left">
+                  <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}">
+                    <button class="btn" type="submit" title="Toggle"
+                            style="padding:0; width:30px; height:30px; border-radius:999px;">
+                      <span class="check {% if t.is_done %}done{% endif %}"></span>
+                    </button>
+                  </form>
 
+                  <div>
+                    <div class="task-title {% if t.is_done %}done{% endif %}">{{ t.title }}</div>
+                    <div class="muted" style="font-size:12px; font-weight:800; margin-top:2px;">
+                      {{ label }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pills">
+                  <span class="pill pill-goal">Goal {{ t.goal.title if t.goal else t.goal_id }}</span>
                   {% if t.due_date %}
-                    <span style="margin-left:10px;">(до {{ t.due_date.isoformat() }})</span>
+                    <span class="pill pill-dead">{{ t.due_date.strftime("%d") }} Deadline</span>
                   {% endif %}
+                </div>
 
-                  <!-- move (7 days select) -->
-                  <form method="post" action="{{ url_for('tasks.move_task', task_id=t.id) }}" style="display:inline;">
-                    <select name="planned_for">
+                <div class="row-actions">
+                  <form method="post" action="{{ url_for('tasks.move_task', task_id=t.id) }}">
+                    <select class="select" name="planned_for" style="min-width:120px;">
                       {% for dd in days %}
-                        <option value="{{ dd.isoformat() }}" {% if dd==d %}selected{% endif %}>
+                        <option value="{{ dd.isoformat() }}" {% if dd==today %}selected{% endif %}>
                           {{ dd.strftime("%a %d") }}
                         </option>
                       {% endfor %}
                     </select>
-                    <button type="submit">Move</button>
+                    <button class="btn" type="submit">Move</button>
                   </form>
 
-                  <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}" style="display:inline;">
-                    <button type="submit">Toggle</button>
-                  </form>
-
-                  <a href="{{ url_for('tasks.edit_task', task_id=t.id) }}">Edit</a>
+                  <a class="btn" href="{{ url_for('tasks.edit_task', task_id=t.id) }}"
+                     style="text-decoration:none; display:inline-flex; align-items:center;">
+                    Edit
+                  </a>
 
                   <form method="post" action="{{ url_for('tasks.delete_task', task_id=t.id) }}"
-                        style="display:inline;" onsubmit="return confirm('Видалити задачу?');">
-                    <button type="submit">Delete</button>
+                        onsubmit="return confirm('Видалити задачу?');">
+                    <button class="btn btn-danger" type="submit">Delete</button>
                   </form>
-                </li>
-              {% endfor %}
-            </ul>
+                </div>
+              </div>
+            {% endfor %}
           {% else %}
-            <p style="opacity:0.8;">Нема задач цього типу</p>
+            <div class="muted" style="font-weight:800;">No tasks</div>
           {% endif %}
+        </div>
+      </details>
+    {% endfor %}
+  </div>
 
-          <br>
-        {% endfor %}
-      </div>
-    </details>
+  {# Нижній список днів як на мокапі #}
+  <div class="days-list">
+    {% for d in days[1:] %}
+      {% set day = tasks_by_day[d] %}
+      <details class="day-row">
+        <summary>
+          <div class="day-mini">
+            <div style="font-weight:1000;">{{ d.strftime("%a, %b %d") }}</div>
+            <div class="mini-kpi">{{ day.done }}/{{ day.total }} Done ({{ day.percent }}%)</div>
+            <div class="progress" data-progress="{{ day.percent }}"><div></div></div>
+          </div>
+          <span class="chev">⌄</span>
+        </summary>
 
-    <br>
-  {% endfor %}
+        <div class="pad">
+          {% for code, label in [("DREAM","Dreams"),("GOAL","Goals"),("MUST","Must")] %}
+            {% set items = day.groups[code] %}
+            <details class="section">
+              <summary>
+                <span>{{ label }}</span>
+                <span class="chev">⌄</span>
+              </summary>
+
+              <div class="tasks-list">
+                {% if items %}
+                  {% for t in items %}
+                    <div class="task-row">
+                      <div class="left">
+                        <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}">
+                          <button class="btn" type="submit" title="Toggle"
+                                  style="padding:0; width:30px; height:30px; border-radius:999px;">
+                            <span class="check {% if t.is_done %}done{% endif %}"></span>
+                          </button>
+                        </form>
+                        <div class="task-title {% if t.is_done %}done{% endif %}">{{ t.title }}</div>
+                      </div>
+
+                      <div class="pills">
+                        <span class="pill pill-goal">Goal {{ t.goal.title if t.goal else t.goal_id }}</span>
+                        {% if t.due_date %}
+                          <span class="pill pill-dead">{{ t.due_date.strftime("%d") }} Deadline</span>
+                        {% endif %}
+                      </div>
+
+                      <div class="row-actions">
+                        <a class="btn" href="{{ url_for('tasks.edit_task', task_id=t.id) }}"
+                           style="text-decoration:none; display:inline-flex; align-items:center;">
+                          Edit
+                        </a>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="muted" style="font-weight:800;">No tasks</div>
+                {% endif %}
+              </div>
+            </details>
+          {% endfor %}
+        </div>
+      </details>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.progress[data-progress]').forEach(p => {
+    const val = parseInt(p.getAttribute('data-progress') || '0', 10);
+    const bar = p.querySelector('div');
+    if (bar) bar.style.width = Math.max(0, Math.min(100, val)) + '%';
+  });
+</script>
 {% endblock %}
