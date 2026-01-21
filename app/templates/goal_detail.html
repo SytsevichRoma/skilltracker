@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ goal.title }}</title>
+</head>
+<body>
+
+  <p><a href="/goals">← Back to goals</a> | <a href="/logout">Logout</a></p>
+
+  <h2>{{ goal.title }}</h2>
+  {% if goal.description %}
+    <p>{{ goal.description }}</p>
+  {% endif %}
+
+  <hr>
+
+  <h3>Tasks</h3>
+
+  <form method="POST" action="/tasks/create">
+    <input type="hidden" name="goal_id" value="{{ goal.id }}">
+    <input type="text" name="title" placeholder="New task..." required>
+    <button type="submit">Add</button>
+  </form>
+
+  <br>
+
+  {% if tasks %}
+    <ul>
+      {% for t in tasks %}
+        <li>
+          {% if t.is_done %}
+            ✅
+          {% else %}
+            ⏳
+          {% endif %}
+          {{ t.title }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No tasks yet</p>
+  {% endif %}
+
+</body>
+</html>

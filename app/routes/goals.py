@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models.goal import Goal
+from app.models.task import Task
 
 goals_bp = Blueprint("goals", __name__)
 
@@ -30,3 +31,10 @@ def create_goal():
         return redirect(url_for("goals.list_goals"))
 
     return render_template("goal_create.html")
+
+@goals_bp.get("/goals/<int:goal_id>")
+@login_required
+def goal_detail(goal_id):
+    goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
+    tasks = Task.query.filter_by(goal_id=goal.id).order_by(Task.id.desc()).all()
+    return render_template("goal_detail.html", goal=goal, tasks=tasks)

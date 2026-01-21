@@ -16,7 +16,9 @@
     <ul>
       {% for g in goals %}
         <li>
-          <b>{{ g.title }}</b>
+          <a href="{{ url_for('goals.goal_detail', goal_id=g.id) }}"><b>{{ g.title }}</b></a>
+
+
           {% if g.description %}- {{ g.description }}{% endif %}
         </li>
       {% endfor %}
