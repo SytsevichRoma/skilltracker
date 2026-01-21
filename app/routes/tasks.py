@@ -8,7 +8,7 @@ from app.models.task import Task
 tasks_bp = Blueprint("tasks", __name__)
 
 
-@tasks_bp.route("/tasks/create", methods=["POST"])
+@tasks_bp.post("/tasks/create")
 @login_required
 def create_task():
     goal_id = request.form.get("goal_id", type=int)
@@ -28,15 +28,26 @@ def create_task():
     return redirect(url_for("goals.goal_detail", goal_id=goal.id))
 
 
-@tasks_bp.route("/tasks/<int:task_id>/toggle", methods=["POST"])
+@tasks_bp.post("/tasks/<int:task_id>/toggle")
 @login_required
 def toggle_task(task_id):
     task = Task.query.get_or_404(task_id)
-
-    # Перевіряємо, що задача належить goal поточного користувача
     goal = Goal.query.filter_by(id=task.goal_id, user_id=current_user.id).first_or_404()
 
     task.is_done = not task.is_done
     db.session.commit()
 
+    return redirect(url_for("goals.goal_detail", goal_id=goal.id))
+
+
+@tasks_bp.post("/tasks/<int:task_id>/delete")
+@login_required
+def delete_task(task_id):
+    task = Task.query.get_or_404(task_id)
+    goal = Goal.query.filter_by(id=task.goal_id, user_id=current_user.id).first_or_404()
+
+    db.session.delete(task)
+    db.session.commit()
+
+    flash("Задачу видалено 🗑️", "info")
     return redirect(url_for("goals.goal_detail", goal_id=goal.id))

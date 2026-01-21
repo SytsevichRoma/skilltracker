@@ -1,15 +1,12 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Goals</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Goals{% endblock %}
+
+{% block content %}
   <h2>Your goals</h2>
 
   <p>
-    <a href="/goals/create">+ Create goal</a> |
-    <a href="/logout">Logout</a>
+    <a href="{{ url_for('goals.create_goal') }}">+ Create goal</a> |
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
   </p>
 
   {% if goals %}
@@ -17,8 +14,6 @@
       {% for g in goals %}
         <li>
           <a href="{{ url_for('goals.goal_detail', goal_id=g.id) }}"><b>{{ g.title }}</b></a>
-
-
           {% if g.description %}- {{ g.description }}{% endif %}
         </li>
       {% endfor %}
@@ -26,5 +21,4 @@
   {% else %}
     <p>No goals yet 😅</p>
   {% endif %}
-</body>
-</html>
+{% endblock %}

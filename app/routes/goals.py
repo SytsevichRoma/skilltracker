@@ -6,11 +6,13 @@ from app.models.task import Task
 
 goals_bp = Blueprint("goals", __name__)
 
+
 @goals_bp.get("/goals")
 @login_required
 def list_goals():
     goals = Goal.query.filter_by(user_id=current_user.id).order_by(Goal.id.desc()).all()
     return render_template("goals.html", goals=goals)
+
 
 @goals_bp.route("/goals/create", methods=["GET", "POST"])
 @login_required
@@ -32,9 +34,24 @@ def create_goal():
 
     return render_template("goal_create.html")
 
+
 @goals_bp.get("/goals/<int:goal_id>")
 @login_required
 def goal_detail(goal_id):
     goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
     tasks = Task.query.filter_by(goal_id=goal.id).order_by(Task.id.desc()).all()
     return render_template("goal_detail.html", goal=goal, tasks=tasks)
+
+
+@goals_bp.post("/goals/<int:goal_id>/delete")
+@login_required
+def delete_goal(goal_id):
+    goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
+
+    # видаляємо всі tasks цієї цілі (без каскаду, вручну)
+    Task.query.filter_by(goal_id=goal.id).delete()
+    db.session.delete(goal)
+    db.session.commit()
+
+    flash("Ціль видалено 🗑️", "info")
+    return redirect(url_for("goals.list_goals"))

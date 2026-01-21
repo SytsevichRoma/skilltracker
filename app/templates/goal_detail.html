@@ -1,23 +1,27 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{{ goal.title }}</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}{{ goal.title }}{% endblock %}
 
-  <p><a href="/goals">← Back to goals</a> | <a href="/logout">Logout</a></p>
+{% block content %}
+  <p>
+    <a href="{{ url_for('goals.list_goals') }}">← Back to goals</a> |
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </p>
 
   <h2>{{ goal.title }}</h2>
   {% if goal.description %}
     <p>{{ goal.description }}</p>
   {% endif %}
 
+  <form method="post" action="{{ url_for('goals.delete_goal', goal_id=goal.id) }}"
+        onsubmit="return confirm('Точно видалити ціль і всі задачі?');">
+    <button type="submit">Delete goal 🗑️</button>
+  </form>
+
   <hr>
 
   <h3>Tasks</h3>
 
-  <form method="POST" action="/tasks/create">
+  <form method="post" action="{{ url_for('tasks.create_task') }}">
     <input type="hidden" name="goal_id" value="{{ goal.id }}">
     <input type="text" name="title" placeholder="New task..." required>
     <button type="submit">Add</button>
@@ -29,15 +33,16 @@
     <ul>
       {% for t in tasks %}
         <li>
-          {% if t.is_done %}
-            ✅
-          {% else %}
-            ⏳
-          {% endif %}
+          {% if t.is_done %}✅{% else %}⏳{% endif %}
           {{ t.title }}
 
-          <form method="POST" action="/tasks/{{ t.id }}/toggle" style="display:inline;">
+          <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}" style="display:inline;">
             <button type="submit">Toggle</button>
+          </form>
+
+          <form method="post" action="{{ url_for('tasks.delete_task', task_id=t.id) }}"
+                style="display:inline;" onsubmit="return confirm('Видалити задачу?');">
+            <button type="submit">Delete</button>
           </form>
         </li>
       {% endfor %}
@@ -45,6 +50,4 @@
   {% else %}
     <p>No tasks yet</p>
   {% endif %}
-
-</body>
-</html>
+{% endblock %}
