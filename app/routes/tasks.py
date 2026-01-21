@@ -1,10 +1,12 @@
 from flask import Blueprint, request, redirect, url_for, flash
 from flask_login import login_required, current_user
+
 from app.extensions import db
 from app.models.goal import Goal
 from app.models.task import Task
 
 tasks_bp = Blueprint("tasks", __name__)
+
 
 @tasks_bp.route("/tasks/create", methods=["POST"])
 @login_required
@@ -23,4 +25,18 @@ def create_task():
     db.session.commit()
 
     flash("Задача додана ✅", "success")
+    return redirect(url_for("goals.goal_detail", goal_id=goal.id))
+
+
+@tasks_bp.route("/tasks/<int:task_id>/toggle", methods=["POST"])
+@login_required
+def toggle_task(task_id):
+    task = Task.query.get_or_404(task_id)
+
+    # Перевіряємо, що задача належить goal поточного користувача
+    goal = Goal.query.filter_by(id=task.goal_id, user_id=current_user.id).first_or_404()
+
+    task.is_done = not task.is_done
+    db.session.commit()
+
     return redirect(url_for("goals.goal_detail", goal_id=goal.id))

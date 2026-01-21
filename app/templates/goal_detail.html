@@ -35,6 +35,10 @@
             ⏳
           {% endif %}
           {{ t.title }}
+
+          <form method="POST" action="/tasks/{{ t.id }}/toggle" style="display:inline;">
+            <button type="submit">Toggle</button>
+          </form>
         </li>
       {% endfor %}
     </ul>
