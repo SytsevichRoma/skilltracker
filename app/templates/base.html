@@ -5,6 +5,13 @@
   <title>{% block title %}SkillTracker{% endblock %}</title>
 </head>
 <body>
+
+  <p>
+    <a href="{{ url_for('tasks.week_view') }}">7 days</a> |
+    <a href="{{ url_for('goals.list_goals') }}">Goals</a>
+  </p>
+  <hr>
+
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <ul>

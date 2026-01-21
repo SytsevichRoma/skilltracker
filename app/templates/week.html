@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}7 days{% endblock %}
+
+{% block content %}
+  <h2>План на 7 днів</h2>
+
+  <p>
+    <a href="{{ url_for('goals.list_goals') }}">Goals</a> |
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </p>
+
+  {% if not goals %}
+    <p><b>Спочатку створи хоча б одну Goal</b>, бо задача має належати до Goal.</p>
+    <p><a href="{{ url_for('goals.create_goal') }}">+ Create goal</a></p>
+    <hr>
+  {% endif %}
+
+  {% for d in days %}
+    {% set day = tasks_by_day[d] %}
+    <details {% if loop.first %}open{% endif %}>
+      <summary style="cursor:pointer;">
+        <b>{{ d.strftime("%a, %d %b %Y") }}</b>
+        — {{ day.done }}/{{ day.total }} ({{ day.percent }}%)
+      </summary>
+
+      <div style="padding: 10px 0;">
+        <h4>Add task</h4>
+        <form method="post" action="{{ url_for('tasks.create_task') }}">
+          <input type="hidden" name="planned_for" value="{{ d.isoformat() }}">
+
+          <input type="text" name="title" placeholder="Task title..." required>
+
+          <select name="task_type">
+            {% for key, label in task_types %}
+              <option value="{{ key }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+
+          <select name="goal_id" {% if not goals %}disabled{% endif %} required>
+            {% for g in goals %}
+              <option value="{{ g.id }}">{{ g.title }}</option>
+            {% endfor %}
+          </select>
+
+          <label>
+            Дедлайн до:
+            <input type="date" name="due_date">
+          </label>
+
+          <button type="submit" {% if not goals %}disabled{% endif %}>Add</button>
+        </form>
+
+        <hr>
+
+        {% for code in ["DREAM","GOAL","MUST"] %}
+          <h4>{{ type_label(code) }}</h4>
+
+          {% set items = day.groups[code] %}
+          {% if items %}
+            <ul>
+              {% for t in items %}
+                <li>
+                  {% if t.is_done %}✅{% else %}⏳{% endif %}
+                  <b>{{ t.title }}</b>
+
+                  {% if t.due_date %}
+                    <span style="margin-left:10px;">(до {{ t.due_date.isoformat() }})</span>
+                  {% endif %}
+
+                  <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}" style="display:inline;">
+                    <button type="submit">Toggle</button>
+                  </form>
+
+                  <form method="post" action="{{ url_for('tasks.delete_task', task_id=t.id) }}"
+                        style="display:inline;" onsubmit="return confirm('Видалити задачу?');">
+                    <button type="submit">Delete</button>
+                  </form>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p style="opacity:0.8;">Нема задач цього типу</p>
+          {% endif %}
+
+          <br>
+        {% endfor %}
+      </div>
+    </details>
+
+    <br>
+  {% endfor %}
+{% endblock %}
