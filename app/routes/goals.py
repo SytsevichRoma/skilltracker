@@ -45,3 +45,18 @@ def goal_detail(goal_id):
     goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
     tasks = Task.query.filter_by(goal_id=goal.id).order_by(Task.id.desc()).all()
     return render_template("goal_detail.html", goal=goal, tasks=tasks)
+
+
+@goals_bp.post("/goals/<int:goal_id>/delete")
+@login_required
+def delete_goal(goal_id):
+    goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
+
+    # ✅ видаляємо всі tasks цієї цілі (щоб не було foreign key проблем)
+    Task.query.filter_by(goal_id=goal.id).delete()
+
+    db.session.delete(goal)
+    db.session.commit()
+
+    flash(_("Goal deleted ✅"), "success")
+    return redirect(url_for("goals.list_goals"))

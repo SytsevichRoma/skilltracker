@@ -44,3 +44,6 @@ msgstr "Week"
 
 msgid "Calendar"
 msgstr "Calendar"
+
+msgid "Goal deleted ✅"
+msgstr "Goal deleted ✅"

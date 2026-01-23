@@ -73,11 +73,17 @@
             <span class="pill">🎯 {{ _("Goals") }}</span>
           </div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-top:10px;">
-            <a class="btn" href="{{ url_for('goals.goal_detail', goal_id=g.id) }}" style="text-decoration:none;">
-              {{ _("Open") }}
-            </a>
-          </div>
+         <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-top:10px;">
+  <a class="btn" href="{{ url_for('goals.goal_detail', goal_id=g.id) }}" style="text-decoration:none;">
+    {{ _("Open") }}
+  </a>
+
+  <form method="post" action="{{ url_for('goals.delete_goal', goal_id=g.id) }}"
+        onsubmit="return confirm('Delete this goal?');">
+    <button class="btn btn-danger" type="submit">Delete</button>
+  </form>
+</div>
+
         </div>
       {% endfor %}
     </div>

@@ -44,3 +44,6 @@ msgstr "Semana"
 
 msgid "Calendar"
 msgstr "Calendario"
+
+msgid "Goal deleted ✅"
+msgstr "Meta eliminada ✅"
