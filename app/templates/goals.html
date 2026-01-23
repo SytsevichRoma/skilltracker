@@ -1,24 +1,88 @@
 {% extends "base.html" %}
-{% block title %}Goals{% endblock %}
+{% block title %}{{ _("Goals") }}{% endblock %}
 
 {% block content %}
-  <h2>Your goals</h2>
+<style>
+  .goal-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .goal-card{
+    border:1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255,255,255,.75);
+    box-shadow: var(--shadow-sm);
+    padding: 14px;
+  }
+  .goal-title{
+    font-weight: 800;
+    letter-spacing:-.2px;
+    margin: 0 0 6px;
+  }
+  .goal-desc{
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.35;
+    margin: 0 0 10px;
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--pill);
+    border: 1px solid rgba(0,0,0,.08);
+    font-size: 12px;
+    font-weight: 650;
+    color: rgba(0,0,0,.72);
+    white-space: nowrap;
+  }
+  @media (max-width: 900px){
+    .goal-grid{ grid-template-columns: 1fr; }
+  }
+</style>
 
-  <p>
-    <a href="{{ url_for('goals.create_goal') }}">+ Create goal</a> |
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
-  </p>
+<div class="card pad">
+  <div class="top">
+    <div>
+      <h1 class="h1">{{ _("Your goals") }}</h1>
+      <div class="muted">{{ _("Goals") }} → {{ _("Week") }} → {{ _("Calendar") }}</div>
+    </div>
+
+    <a class="btn btn-primary" href="{{ url_for('goals.create_goal') }}" style="text-decoration:none;">
+      + {{ _("Create goal") }}
+    </a>
+  </div>
 
   {% if goals %}
-    <ul>
+    <div class="goal-grid">
       {% for g in goals %}
-        <li>
-          <a href="{{ url_for('goals.goal_detail', goal_id=g.id) }}"><b>{{ g.title }}</b></a>
-          {% if g.description %}- {{ g.description }}{% endif %}
-        </li>
+        <div class="goal-card">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+            <div style="flex:1;">
+              <h3 class="goal-title">{{ g.title }}</h3>
+              {% if g.description %}
+                <p class="goal-desc">{{ g.description }}</p>
+              {% else %}
+                <p class="goal-desc">{{ _("Description") }}: —</p>
+              {% endif %}
+            </div>
+
+            <span class="pill">🎯 {{ _("Goals") }}</span>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-top:10px;">
+            <a class="btn" href="{{ url_for('goals.goal_detail', goal_id=g.id) }}" style="text-decoration:none;">
+              {{ _("Open") }}
+            </a>
+          </div>
+        </div>
       {% endfor %}
-    </ul>
+    </div>
   {% else %}
-    <p>No goals yet 😅</p>
+    <div class="flash">{{ _("No goals yet") }} 😅</div>
   {% endif %}
+</div>
 {% endblock %}

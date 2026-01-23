@@ -1,0 +1,46 @@
+msgid ""
+msgstr ""
+"Language: uk\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Goals"
+msgstr "Цілі"
+
+msgid "Create goal"
+msgstr "Створити ціль"
+
+msgid "Your goals"
+msgstr "Твої цілі"
+
+msgid "No goals yet"
+msgstr "Поки немає цілей"
+
+msgid "Title"
+msgstr "Назва"
+
+msgid "Description"
+msgstr "Опис"
+
+msgid "Save"
+msgstr "Зберегти"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Open"
+msgstr "Відкрити"
+
+msgid "Goal created ✅"
+msgstr "Ціль створено ✅"
+
+msgid "Tasks"
+msgstr "Задачі"
+
+msgid "No tasks"
+msgstr "Поки немає задач"
+
+msgid "Week"
+msgstr "Тиждень"
+
+msgid "Calendar"
+msgstr "Календар"

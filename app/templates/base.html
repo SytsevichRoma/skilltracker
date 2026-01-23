@@ -32,7 +32,6 @@
       background:var(--bg);
       color:var(--text);
 
-      /* ✅ більш "app-like" шрифт */
       font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
       font-weight: 500;
     }
@@ -64,7 +63,7 @@
       display:flex;
       align-items:center;
       gap:10px;
-      padding: 8px 8px 14px;
+      padding: 8px 8px 12px;
     }
 
     .logo{
@@ -78,6 +77,14 @@
       font-weight: 800;
       letter-spacing:-.2px;
       font-size: 15px;
+    }
+
+    .langbox{
+      padding: 0 8px 12px;
+    }
+    .langbox .muted{ margin-bottom:6px; }
+    .langrow{
+      display:flex; gap:8px; flex-wrap:wrap;
     }
 
     .nav{
@@ -111,7 +118,6 @@
       font-weight: 750;
     }
 
-    /* ✅ загальні */
     .card{
       background: var(--card);
       border:1px solid var(--line);
@@ -135,7 +141,7 @@
     .h1{
       margin:0;
       font-size:28px;
-      font-weight: 800; /* ✅ менше “жиру” */
+      font-weight: 800;
       letter-spacing:-.6px;
     }
 
@@ -154,6 +160,10 @@
       cursor:pointer;
       box-shadow: var(--shadow-sm);
       transition: transform .06s ease, background .12s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .btn:hover{ background: rgba(255,255,255,.95); }
     .btn:active{ transform: scale(.985); }
@@ -172,7 +182,7 @@
       font-weight: 700;
     }
 
-    .input, .select{
+    .input, .select, textarea.input{
       width: 100%;
       padding: 10px 12px;
       border-radius: 12px;
@@ -182,6 +192,7 @@
       font-size: 14px;
       outline: none;
       font-weight: 550;
+      font-family: inherit;
     }
 
     .row{
@@ -224,20 +235,32 @@
         <div class="brand-title">SkillTracker</div>
       </div>
 
+      <!-- ✅ Language switch -->
+      <div class="langbox">
+        <div class="muted">Language</div>
+        <div class="langrow">
+          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='uk') }}">UA</a>
+          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='en') }}">EN</a>
+          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='pl') }}">PL</a>
+          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='de') }}">DE</a>
+          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='es') }}">ES</a>
+        </div>
+      </div>
+
       <nav class="nav">
         <a href="{{ url_for('goals.list_goals') }}"
            class="{% if request.path.startswith('/goals') %}active{% endif %}">
-          🎯 Goals
+          🎯 {{ _("Goals") }}
         </a>
 
         <a href="{{ url_for('tasks.week_view') }}"
            class="{% if request.path.startswith('/week') %}active{% endif %}">
-          🗓️ Week
+          🗓️ {{ _("Week") }}
         </a>
 
         <a href="{{ url_for('calendar.month_view') }}"
            class="{% if request.path.startswith('/calendar') %}active{% endif %}">
-          🗂️ Calendar
+          🗂️ {{ _("Calendar") }}
         </a>
 
         <a href="{{ url_for('auth.logout') }}">

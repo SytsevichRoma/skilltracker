@@ -1,0 +1,46 @@
+msgid ""
+msgstr ""
+"Language: de\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Goals"
+msgstr "Ziele"
+
+msgid "Create goal"
+msgstr "Ziel erstellen"
+
+msgid "Your goals"
+msgstr "Deine Ziele"
+
+msgid "No goals yet"
+msgstr "Noch keine Ziele"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Back"
+msgstr "Zurück"
+
+msgid "Open"
+msgstr "Öffnen"
+
+msgid "Goal created ✅"
+msgstr "Ziel erstellt ✅"
+
+msgid "Tasks"
+msgstr "Aufgaben"
+
+msgid "No tasks"
+msgstr "Keine Aufgaben"
+
+msgid "Week"
+msgstr "Woche"
+
+msgid "Calendar"
+msgstr "Kalender"

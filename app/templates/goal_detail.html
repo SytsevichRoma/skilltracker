@@ -2,52 +2,74 @@
 {% block title %}{{ goal.title }}{% endblock %}
 
 {% block content %}
-  <p>
-    <a href="{{ url_for('goals.list_goals') }}">← Back to goals</a> |
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
-  </p>
+<style>
+  .task-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+    padding: 10px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,.07);
+    background: rgba(255,255,255,.86);
+    box-shadow: 0 10px 18px rgba(0,0,0,.05);
+    margin-bottom: 10px;
+  }
+  .left{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .check{
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid rgba(0,0,0,.18);
+    display:inline-block;
+  }
+  .check.done{
+    border-color: rgba(10,132,255,.55);
+    background: rgba(10,132,255,.22);
+  }
+  .title{
+    font-weight: 750;
+    letter-spacing:-.2px;
+  }
+  .title.done{
+    opacity:.55;
+    text-decoration: line-through;
+  }
+</style>
 
-  <h2>{{ goal.title }}</h2>
-  {% if goal.description %}
-    <p>{{ goal.description }}</p>
-  {% endif %}
+<div class="card pad">
+  <div class="top">
+    <div>
+      <h1 class="h1">{{ goal.title }}</h1>
+      {% if goal.description %}
+        <div class="muted">{{ goal.description }}</div>
+      {% endif %}
+    </div>
 
-  <form method="post" action="{{ url_for('goals.delete_goal', goal_id=goal.id) }}"
-        onsubmit="return confirm('Точно видалити ціль і всі задачі?');">
-    <button type="submit">Delete goal 🗑️</button>
-  </form>
+    <a class="btn" href="{{ url_for('goals.list_goals') }}" style="text-decoration:none;">← {{ _("Back") }}</a>
+  </div>
 
-  <hr>
+  <div class="divider"></div>
 
-  <h3>Tasks</h3>
-
-  <form method="post" action="{{ url_for('tasks.create_task') }}">
-    <input type="hidden" name="goal_id" value="{{ goal.id }}">
-    <input type="text" name="title" placeholder="New task..." required>
-    <button type="submit">Add</button>
-  </form>
-
-  <br>
+  <h3 style="margin:0 0 10px; font-weight:750;">{{ _("Tasks") }}</h3>
 
   {% if tasks %}
-    <ul>
-      {% for t in tasks %}
-        <li>
-          {% if t.is_done %}✅{% else %}⏳{% endif %}
-          {{ t.title }}
-
-          <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}" style="display:inline;">
-            <button type="submit">Toggle</button>
-          </form>
-
-          <form method="post" action="{{ url_for('tasks.delete_task', task_id=t.id) }}"
-                style="display:inline;" onsubmit="return confirm('Видалити задачу?');">
-            <button type="submit">Delete</button>
-          </form>
-        </li>
-      {% endfor %}
-    </ul>
+    {% for t in tasks %}
+      <div class="task-row">
+        <div class="left">
+          <span class="check {% if t.is_done %}done{% endif %}"></span>
+          <div class="title {% if t.is_done %}done{% endif %}">{{ t.title }}</div>
+        </div>
+      </div>
+    {% endfor %}
   {% else %}
-    <p>No tasks yet</p>
+    <div class="muted">{{ _("No tasks") }}</div>
   {% endif %}
+</div>
 {% endblock %}
