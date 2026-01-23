@@ -237,14 +237,26 @@
 
       <!-- ✅ Language switch -->
       <div class="langbox">
-        <div class="muted">Language</div>
-        <div class="langrow">
-          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='uk') }}">UA</a>
-          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='en') }}">EN</a>
-          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='pl') }}">PL</a>
-          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='de') }}">DE</a>
-          <a class="btn" style="padding:6px 10px; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='es') }}">ES</a>
-        </div>
+        <div class="langbox">
+  <div class="muted">Language</div>
+
+  <details style="position:relative;">
+    <summary class="btn" style="padding:8px 10px; list-style:none;">
+      🌐 {{ (session.get('lang') or 'uk')|upper }}
+    </summary>
+
+    <div class="card" style="position:absolute; left:0; margin-top:10px; width: 210px; padding:10px; z-index:20;">
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <a class="btn" style="justify-content:flex-start; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='uk') }}">🇺🇦 Українська (UA)</a>
+        <a class="btn" style="justify-content:flex-start; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='en') }}">🇬🇧 English (EN)</a>
+        <a class="btn" style="justify-content:flex-start; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='pl') }}">🇵🇱 Polski (PL)</a>
+        <a class="btn" style="justify-content:flex-start; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='de') }}">🇩🇪 Deutsch (DE)</a>
+        <a class="btn" style="justify-content:flex-start; text-decoration:none;" href="{{ url_for('i18n.set_lang', code='es') }}">🇪🇸 Español (ES)</a>
+      </div>
+    </div>
+  </details>
+</div>
+
       </div>
 
       <nav class="nav">
