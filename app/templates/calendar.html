@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Calendar{% endblock %}
+
+{% block content %}
+<style>
+  .cal-head{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    margin-bottom: 12px;
+  }
+  .cal-grid{
+    display:grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+  .dow{
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 700;
+    padding: 6px 6px 0;
+  }
+  .cell{
+    min-height: 120px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,.72);
+    box-shadow: var(--shadow-sm);
+    padding: 10px;
+    overflow:hidden;
+  }
+  .cell.empty{
+    background: transparent;
+    border: 1px dashed rgba(0,0,0,.08);
+    box-shadow: none;
+  }
+  .date-badge{
+    display:flex; align-items:center; justify-content:space-between;
+    font-weight: 800;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .today{
+    outline: 2px solid rgba(10,132,255,.25);
+  }
+  .titem{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding: 8px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,.07);
+    background: rgba(255,255,255,.88);
+    box-shadow: 0 10px 18px rgba(0,0,0,.05);
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 650;
+  }
+  .dot{
+    width:10px; height:10px; border-radius:999px;
+    border:2px solid rgba(0,0,0,.18);
+    flex: 0 0 auto;
+  }
+  .dot.done{
+    border-color: rgba(10,132,255,.55);
+    background: rgba(10,132,255,.22);
+  }
+  .more{
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+</style>
+
+<div class="card pad">
+  <div class="cal-head">
+    <div>
+      <h1 class="h1" style="margin-bottom:6px;">Calendar</h1>
+      <div class="muted">Показує задачі по днях (planned_for).</div>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn" href="{{ url_for('calendar.month_view', ym=prev_ym) }}" style="text-decoration:none;">← Prev</a>
+      <span class="btn" style="cursor:default;">
+        {{ first_day.strftime("%B %Y") }}
+      </span>
+      <a class="btn" href="{{ url_for('calendar.month_view', ym=next_ym) }}" style="text-decoration:none;">Next →</a>
+    </div>
+  </div>
+
+  <div class="cal-grid" style="margin-bottom:10px;">
+    {% for name in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] %}
+      <div class="dow">{{ name }}</div>
+    {% endfor %}
+  </div>
+
+  <div class="cal-grid">
+    {% for d in cells %}
+      {% if not d %}
+        <div class="cell empty"></div>
+      {% else %}
+        {% set items = tasks_by_day.get(d, []) %}
+        <div class="cell {% if d==today %}today{% endif %}">
+          <div class="date-badge">
+            <span>{{ d.day }}</span>
+            <span class="more">{{ items|length }}</span>
+          </div>
+
+          {% if items %}
+            {% for t in items[:3] %}
+              <div class="titem">
+                <span class="dot {% if t.is_done %}done{% endif %}"></span>
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                  {{ t.title }}
+                </span>
+              </div>
+            {% endfor %}
+            {% if items|length > 3 %}
+              <div class="more">+{{ items|length - 3 }} more</div>
+            {% endif %}
+          {% else %}
+            <div class="more">No tasks</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

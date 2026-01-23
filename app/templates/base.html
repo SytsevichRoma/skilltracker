@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>{% block title %}SkillTracker{% endblock %}</title>
 
   <style>
@@ -16,20 +17,24 @@
       --shadow-sm:0 10px 24px rgba(0,0,0,.06);
       --r:18px;
       --r2:14px;
+
       --blue:#0a84ff;
       --blue2:rgba(10,132,255,.12);
+
       --red2:rgba(255,59,48,.14);
-      --green2:rgba(52,199,89,.14);
-      --yellow2:rgba(255,204,0,.16);
       --pill:rgba(0,0,0,.06);
     }
 
     *{box-sizing:border-box}
+
     body{
       margin:0;
       background:var(--bg);
       color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
+
+      /* ✅ більш "app-like" шрифт */
+      font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+      font-weight: 500;
     }
 
     .app{
@@ -61,19 +66,26 @@
       gap:10px;
       padding: 8px 8px 14px;
     }
+
     .logo{
       width:34px;height:34px;border-radius:12px;
       background: linear-gradient(135deg, rgba(10,132,255,.25), rgba(52,199,89,.18));
       border:1px solid var(--line);
       box-shadow: 0 10px 18px rgba(0,0,0,.06);
     }
-    .brand-title{font-weight:900; letter-spacing:-.2px}
+
+    .brand-title{
+      font-weight: 800;
+      letter-spacing:-.2px;
+      font-size: 15px;
+    }
 
     .nav{
       display:flex;
       flex-direction: column;
       gap: 8px;
     }
+
     .nav a{
       display:flex;
       align-items:center;
@@ -83,19 +95,23 @@
       border:1px solid transparent;
       color: var(--text);
       text-decoration: none;
-      font-weight: 800;
+      font-weight: 650;
       background: transparent;
     }
+
     .nav a:hover{
-      background: rgba(255,255,255,.8);
+      background: rgba(255,255,255,.85);
       border-color: var(--line);
     }
+
     .nav a.active{
       background: rgba(10,132,255,.12);
       border: 1px solid rgba(10,132,255,.20);
       color: #0a63c7;
+      font-weight: 750;
     }
 
+    /* ✅ загальні */
     .card{
       background: var(--card);
       border:1px solid var(--line);
@@ -104,6 +120,7 @@
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
     }
+
     .pad{ padding: 16px; }
 
     .top{
@@ -115,30 +132,44 @@
       margin-bottom: 12px;
     }
 
-    .h1{ margin:0; font-size:28px; font-weight:900; letter-spacing:-.6px; }
-    .muted{ color: var(--muted); font-size: 13px; }
+    .h1{
+      margin:0;
+      font-size:28px;
+      font-weight: 800; /* ✅ менше “жиру” */
+      letter-spacing:-.6px;
+    }
+
+    .muted{
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 550;
+    }
 
     .btn{
       border:1px solid var(--line);
-      background: rgba(255,255,255,.75);
+      background: rgba(255,255,255,.78);
       padding: 10px 12px;
       border-radius: 12px;
-      font-weight: 900;
+      font-weight: 650;
       cursor:pointer;
       box-shadow: var(--shadow-sm);
       transition: transform .06s ease, background .12s ease;
     }
-    .btn:hover{ background: rgba(255,255,255,.92); }
+    .btn:hover{ background: rgba(255,255,255,.95); }
     .btn:active{ transform: scale(.985); }
+
     .btn-primary{
       background: var(--blue2);
       border-color: rgba(10,132,255,.20);
       color: #0a63c7;
+      font-weight: 700;
     }
+
     .btn-danger{
       background: var(--red2);
       border-color: rgba(255,59,48,.20);
       color: #b42318;
+      font-weight: 700;
     }
 
     .input, .select{
@@ -146,10 +177,11 @@
       padding: 10px 12px;
       border-radius: 12px;
       border: 1px solid var(--line);
-      background: rgba(255,255,255,.82);
+      background: rgba(255,255,255,.85);
       box-shadow: 0 10px 20px rgba(0,0,0,.05);
       font-size: 14px;
       outline: none;
+      font-weight: 550;
     }
 
     .row{
@@ -159,16 +191,21 @@
     }
     .row > *{ flex: 1; min-width: 160px; }
 
-    .divider{ height: 1px; background: var(--line); margin: 14px 0; }
+    .divider{
+      height: 1px;
+      background: var(--line);
+      margin: 14px 0;
+    }
 
     .flash{
       margin-bottom: 10px;
       padding: 10px 12px;
       border-radius: var(--r2);
       border: 1px solid var(--line);
-      background: rgba(255,255,255,.85);
+      background: rgba(255,255,255,.88);
       box-shadow: var(--shadow-sm);
       font-size: 14px;
+      font-weight: 550;
     }
 
     @media (max-width: 900px){
@@ -177,9 +214,10 @@
     }
   </style>
 </head>
-<body>
 
+<body>
   <div class="app">
+
     <aside class="sidebar">
       <div class="brand">
         <div class="logo"></div>
@@ -191,11 +229,20 @@
            class="{% if request.path.startswith('/goals') %}active{% endif %}">
           🎯 Goals
         </a>
+
         <a href="{{ url_for('tasks.week_view') }}"
            class="{% if request.path.startswith('/week') %}active{% endif %}">
           🗓️ Week
         </a>
-        <a href="{{ url_for('auth.logout') }}">🚪 Logout</a>
+
+        <a href="{{ url_for('calendar.month_view') }}"
+           class="{% if request.path.startswith('/calendar') %}active{% endif %}">
+          🗂️ Calendar
+        </a>
+
+        <a href="{{ url_for('auth.logout') }}">
+          🚪 Logout
+        </a>
       </nav>
     </aside>
 
@@ -210,7 +257,7 @@
 
       {% block content %}{% endblock %}
     </main>
-  </div>
 
+  </div>
 </body>
 </html>
