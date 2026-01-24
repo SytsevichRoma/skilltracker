@@ -28,6 +28,9 @@
     border-radius: 999px;
     border: 2px solid rgba(0,0,0,.18);
     display:inline-block;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
   }
   .check.done{
     border-color: rgba(10,132,255,.55);
@@ -63,7 +66,13 @@
     {% for t in tasks %}
       <div class="task-row">
         <div class="left">
-          <span class="check {% if t.is_done %}done{% endif %}"></span>
+          <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}" style="margin:0;">
+            <button
+              class="check {% if t.is_done %}done{% endif %}"
+              type="submit"
+              title="{% if t.is_done %}{{ _('Mark as not done') }}{% else %}{{ _('Mark as done') }}{% endif %}">
+            </button>
+          </form>
           <div class="title {% if t.is_done %}done{% endif %}">{{ t.title }}</div>
         </div>
       </div>

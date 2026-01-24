@@ -17,3 +17,4 @@ class Task(db.Model):
 
     goal_id = db.Column(db.Integer, db.ForeignKey("goal.id"), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    completed_at = db.Column(db.DateTime, nullable=True, index=True)

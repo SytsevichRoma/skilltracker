@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Stats") }}{% endblock %}
+
+{% block content %}
+<style>
+  .summary-grid{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .summary-card{
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.82);
+    box-shadow: var(--shadow-sm);
+  }
+  .summary-label{ color: var(--muted); font-size: 12px; font-weight: 650; }
+  .summary-value{ font-size: 26px; font-weight: 800; letter-spacing: -.4px; }
+
+  .stats-grid{
+    display:grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 16px;
+  }
+
+  .streak-card{
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.82);
+    box-shadow: var(--shadow-sm);
+  }
+  .streak-value{ font-size: 30px; font-weight: 850; }
+
+  .heatmap{
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 12px;
+    grid-template-rows: repeat(7, 12px);
+    gap: 4px;
+    padding: 10px 0 2px;
+  }
+  .heat-cell{
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    background: rgba(0,0,0,.06);
+    border: 1px solid rgba(0,0,0,.04);
+  }
+  .heat-cell.level-1{ background: rgba(10,132,255,.25); border-color: rgba(10,132,255,.2); }
+  .heat-cell.level-2{ background: rgba(10,132,255,.45); border-color: rgba(10,132,255,.28); }
+  .heat-cell.level-3{ background: rgba(10,132,255,.65); border-color: rgba(10,132,255,.35); }
+  .heat-cell.level-4{ background: rgba(10,132,255,.85); border-color: rgba(10,132,255,.4); }
+  .heat-cell.empty{ background: transparent; border-color: transparent; }
+
+  .table{
+    width:100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  .table th, .table td{
+    text-align:left;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .table th{ color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+
+  @media (max-width: 900px){
+    .summary-grid{ grid-template-columns: 1fr; }
+    .stats-grid{ grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="card pad">
+  <div class="top">
+    <div>
+      <h1 class="h1">{{ _("Stats") }}</h1>
+      <div class="muted">{{ _("Progress overview") }}</div>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-label">{{ _("Completed today") }}</div>
+      <div class="summary-value">{{ completed_today }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">{{ _("Completed this week") }}</div>
+      <div class="summary-value">{{ completed_week }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">{{ _("Completed this month") }}</div>
+      <div class="summary-value">{{ completed_month }}</div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="streak-card">
+      <div class="summary-label">{{ _("Streak") }}</div>
+      <div class="streak-value">{{ streak }}</div>
+      <div class="muted">{{ _("consecutive days with at least one completed task") }}</div>
+
+      <div class="divider"></div>
+
+      <div class="summary-label">{{ _("Last 90 days") }}</div>
+      <div class="heatmap">
+        {% for week in weeks %}
+          {% for day in week %}
+            {% if day %}
+              <div
+                class="heat-cell level-{{ heat_levels[day] }}"
+                title="{{ day.strftime('%Y-%m-%d') }} • {{ heat_counts[day] }}">
+              </div>
+            {% else %}
+              <div class="heat-cell empty"></div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+      <div class="muted">{{ _("Darker = more completions") }}</div>
+    </div>
+
+    <div class="card pad">
+      <div class="summary-label">{{ _("Top goals") }}</div>
+      <div class="divider"></div>
+
+      {% if top_goals %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>{{ _("Goal") }}</th>
+              <th>{{ _("Completions (30 days)") }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for goal, count in top_goals %}
+              <tr>
+                <td>{{ goal.title }}</td>
+                <td>{{ count }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="muted">{{ _("No completed tasks in the last 30 days") }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

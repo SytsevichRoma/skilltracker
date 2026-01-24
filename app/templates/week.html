@@ -75,6 +75,20 @@
     margin-bottom: 10px;
   }
   .t-left{ display:flex; align-items:center; gap:10px; flex:1; min-width: 240px; }
+  .check-btn{
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid rgba(0,0,0,.18);
+    background: transparent;
+    cursor: pointer;
+    flex: 0 0 auto;
+    padding: 0;
+  }
+  .check-btn.done{
+    border-color: rgba(10,132,255,.55);
+    background: rgba(10,132,255,.22);
+  }
   .dot{
     width: 14px; height: 14px; border-radius: 999px;
     border: 2px solid rgba(0,0,0,.18);
@@ -85,6 +99,7 @@
   .dot.dream{ border-color: rgba(52,199,89,.45); background: rgba(52,199,89,.12); }
 
   .t-title{ font-weight: 750; letter-spacing:-.2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .t-title.done{ opacity:.55; text-decoration: line-through; }
   .t-meta{ color: var(--muted); font-size: 12px; font-weight: 650; white-space: nowrap; }
 
   .form-card{
@@ -138,8 +153,15 @@
             {% for t in items %}
               <div class="task-row">
                 <div class="t-left">
+                  <form method="post" action="{{ url_for('tasks.toggle_task', task_id=t.id) }}" style="margin:0;">
+                    <button
+                      class="check-btn {% if t.is_done %}done{% endif %}"
+                      type="submit"
+                      title="{% if t.is_done %}{{ _('Mark as not done') }}{% else %}{{ _('Mark as done') }}{% endif %}">
+                    </button>
+                  </form>
                   <span class="dot {{ t.task_type or '' }}"></span>
-                  <div class="t-title">{{ t.title }}</div>
+                  <div class="t-title {% if t.is_done %}done{% endif %}">{{ t.title }}</div>
                 </div>
 
                 <div class="t-meta">

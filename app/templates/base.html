@@ -78,6 +78,11 @@
       letter-spacing:-.2px;
       font-size: 15px;
     }
+    .brand-subtitle{
+      font-size: 11px;
+      color: #888;
+      margin-top: 2px;
+    }
 
     .langbox{
       padding: 0 8px 12px;
@@ -232,7 +237,10 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo"></div>
-        <div class="brand-title">SkillTracker</div>
+        <div>
+          <div class="brand-title">SkillTracker</div>
+          <div class="brand-subtitle">by Roma Sytsevich</div>
+        </div>
       </div>
 
       <!-- ✅ Language switch -->
@@ -268,6 +276,11 @@
         <a href="{{ url_for('tasks.week_view') }}"
            class="{% if request.path.startswith('/week') %}active{% endif %}">
           🗓️ {{ _("Week") }}
+        </a>
+
+        <a href="{{ url_for('stats.stats_view') }}"
+           class="{% if request.path.startswith('/stats') %}active{% endif %}">
+          📊 {{ _("Stats") }}
         </a>
 
         <a href="{{ url_for('calendar.month_view') }}"

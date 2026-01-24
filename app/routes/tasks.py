@@ -109,3 +109,21 @@ def create_task():
 
     flash(_("Task added ✅"), "success")
     return redirect(request.referrer or url_for("tasks.week_view"))
+
+
+@tasks_bp.post("/tasks/<int:task_id>/toggle")
+@login_required
+def toggle_task(task_id):
+    task = (
+        Task.query
+        .join(Goal)
+        .filter(Task.id == task_id, Goal.user_id == current_user.id)
+        .first_or_404()
+    )
+
+    task.is_done = not task.is_done
+    task.completed_at = datetime.utcnow() if task.is_done else None
+
+    db.session.commit()
+
+    return redirect(request.referrer or url_for("tasks.week_view"))
