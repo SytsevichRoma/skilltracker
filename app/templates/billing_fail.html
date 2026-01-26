@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Payment failed") }}{% endblock %}
+
+{% block content %}
+<div class="card pad">
+  <div class="top">
+    <div>
+      <h1 class="h1">{{ _("Payment failed") }}</h1>
+      <div class="muted">{{ _("Please try again or use a different payment method.") }}</div>
+    </div>
+    <a class="btn" href="{{ url_for('billing.billing_overview') }}" style="text-decoration:none;">
+      {{ _("Back to billing") }}
+    </a>
+  </div>
+
+  <div class="divider"></div>
+
+  <form method="post" action="{{ url_for('billing.create_fondy_payment') }}">
+    <button class="btn btn-primary" type="submit">⭐ {{ _("Try again") }}</button>
+  </form>
+</div>
+{% endblock %}

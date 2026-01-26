@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Payment successful") }}{% endblock %}
+
+{% block content %}
+<div class="card pad">
+  <div class="top">
+    <div>
+      <h1 class="h1">{{ _("Payment successful") }}</h1>
+      <div class="muted">{{ _("Thank you for upgrading to Pro") }}</div>
+    </div>
+    <a class="btn" href="{{ url_for('billing.billing_overview') }}" style="text-decoration:none;">
+      {{ _("Back to billing") }}
+    </a>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="muted">{{ _("Your subscription will be activated shortly if it isn't already.") }}</div>
+  {% if order_id %}
+    <div class="muted" style="margin-top:8px;">{{ _("Order ID") }}: {{ order_id }}</div>
+  {% endif %}
+</div>
+{% endblock %}

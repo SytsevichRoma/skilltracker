@@ -224,6 +224,56 @@
       font-weight: 550;
     }
 
+    .alerts{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-bottom: 12px;
+    }
+    .alert{
+      position: relative;
+      padding: 12px 42px 12px 14px;
+      border-radius: var(--r2);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.9);
+      box-shadow: var(--shadow-sm);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .alert-success{
+      background: rgba(52,199,89,.12);
+      border-color: rgba(52,199,89,.22);
+      color: #1e7a3b;
+    }
+    .alert-danger{
+      background: rgba(255,59,48,.12);
+      border-color: rgba(255,59,48,.22);
+      color: #b42318;
+    }
+    .alert-warning{
+      background: rgba(255,159,10,.12);
+      border-color: rgba(255,159,10,.22);
+      color: #8a4b08;
+    }
+    .alert-info{
+      background: rgba(10,132,255,.12);
+      border-color: rgba(10,132,255,.22);
+      color: #0a63c7;
+    }
+    .alert-dismiss{
+      position:absolute;
+      right: 8px;
+      top: 8px;
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      color: inherit;
+      opacity: .7;
+    }
+    .alert-dismiss:hover{ opacity: 1; }
+
     @media (max-width: 900px){
       .app{ grid-template-columns: 1fr; }
       .sidebar{ position: static; }
@@ -283,6 +333,11 @@
           📊 {{ _("Stats") }}
         </a>
 
+        <a href="{{ url_for('billing.billing_overview') }}"
+           class="{% if request.path.startswith('/billing') or request.path.startswith('/settings/billing') %}active{% endif %}">
+          💳 {{ _("Billing") }}
+        </a>
+
         <a href="{{ url_for('calendar.month_view') }}"
            class="{% if request.path.startswith('/calendar') %}active{% endif %}">
           🗂️ {{ _("Calendar") }}
@@ -297,9 +352,14 @@
     <main>
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-          {% for category, message in messages %}
-            <div class="flash"><b>[{{ category }}]</b> {{ message }}</div>
-          {% endfor %}
+          <div class="alerts" role="status" aria-live="polite">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {{ message }}
+                <button class="alert-dismiss" type="button" aria-label="{{ _('Dismiss') }}">×</button>
+              </div>
+            {% endfor %}
+          </div>
         {% endif %}
       {% endwith %}
 
@@ -307,5 +367,13 @@
     </main>
 
   </div>
+  <script>
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest(".alert-dismiss");
+      if (!button) return;
+      const alert = button.closest(".alert");
+      if (alert) alert.remove();
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Billing") }}{% endblock %}
+
+{% block content %}
+<style>
+  .billing-grid{
+    display:grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 16px;
+  }
+  .plan-card{
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(10,132,255,.2);
+    background: linear-gradient(135deg, rgba(10,132,255,.12), rgba(52,199,89,.08));
+    box-shadow: var(--shadow-sm);
+  }
+  .plan-title{ font-weight: 800; letter-spacing:-.3px; font-size: 18px; }
+  .plan-price{ font-size: 28px; font-weight: 850; margin-top: 6px; }
+  .plan-sub{ color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .plan-list{ margin-top: 10px; color: var(--muted); font-size: 13px; }
+  @media (max-width: 900px){
+    .billing-grid{ grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="card pad">
+  <div class="top">
+    <div>
+      <h1 class="h1">{{ _("Billing") }}</h1>
+      <div class="muted">{{ _("Manage your subscription") }}</div>
+    </div>
+  </div>
+
+  <div class="billing-grid">
+    <div class="plan-card">
+      <div class="plan-title">⭐ {{ _("Pro plan") }}</div>
+      <div class="plan-price">{{ amount }} {{ currency }}</div>
+      <div class="plan-sub">{{ _("Billed for") }} {{ duration_days }} {{ _("days") }}</div>
+
+      <div class="plan-list">• {{ _("Unlimited goals and tasks") }}</div>
+      <div class="plan-list">• {{ _("Priority stats and insights") }}</div>
+      <div class="plan-list">• {{ _("Support development") }}</div>
+
+      <div class="divider"></div>
+
+      {% if fake_enabled %}
+        <div class="flash">{{ _("Development mode payment simulator enabled") }}</div>
+      {% endif %}
+
+      {% if current_user.is_pro %}
+        <div class="muted">{{ _("Pro active") }}</div>
+        {% if current_user.pro_until %}
+          <div class="muted">{{ _("Valid until") }} {{ current_user.pro_until.strftime("%Y-%m-%d") }}</div>
+        {% endif %}
+      {% else %}
+        {% if provider == "fake" %}
+          <form method="post" action="{{ url_for('billing.fake_activate') }}">
+            <button class="btn btn-primary" type="submit">⭐ {{ _("Upgrade to Pro (Fake)") }}</button>
+          </form>
+        {% endif %}
+
+        {% if provider == "fondy" %}
+          <form method="post" action="{{ url_for('billing.create_fondy_payment') }}">
+            <button class="btn btn-primary" type="submit">⭐ {{ _("Upgrade to Pro") }}</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="card pad">
+      <div class="summary-label">{{ _("Payment details") }}</div>
+      <div class="divider"></div>
+      <div class="muted">{{ _("Payments are processed securely by Fondy.") }}</div>
+      <div class="muted" style="margin-top:8px;">{{ _("You can return to this page anytime to manage your plan.") }}</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

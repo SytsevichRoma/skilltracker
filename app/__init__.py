@@ -34,6 +34,7 @@ def create_app():
     from app.routes.calendar import calendar_bp
     from app.routes.i18n import i18n_bp
     from app.routes.stats import stats_bp
+    from app.routes.billing import billing_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
@@ -42,5 +43,6 @@ def create_app():
     app.register_blueprint(calendar_bp)
     app.register_blueprint(i18n_bp)
     app.register_blueprint(stats_bp)
+    app.register_blueprint(billing_bp)
 
     return app

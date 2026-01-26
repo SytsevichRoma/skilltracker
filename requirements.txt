@@ -16,4 +16,5 @@ SQLAlchemy==2.0.45
 typing_extensions==4.15.0
 Werkzeug==3.1.5
 Flask-Babel==4.0.0
-
+pytest==8.3.4
+python-dotenv==1.0.1

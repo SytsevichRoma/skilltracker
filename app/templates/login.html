@@ -1,11 +1,87 @@
-<!doctype html>
-<html><head><meta charset="utf-8"><title>Login</title></head>
-<body>
-<h2>Login</h2>
-<form method="post">
-  <input type="email" name="email" placeholder="Email" required><br><br>
-  <input type="password" name="password" placeholder="Password" required><br><br>
-  <button type="submit">Login</button>
-</form>
-<p><a href="/register">Register</a></p>
-</body></html>
+{% extends "base.html" %}
+{% block title %}{{ _("Login") }}{% endblock %}
+
+{% block content %}
+<style>
+  .auth-shell{
+    display:grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 16px;
+  }
+  .auth-card{
+    border-radius: 20px;
+    padding: 18px;
+  }
+  .auth-hero{
+    border:1px dashed rgba(0,0,0,.08);
+    border-radius: 18px;
+    padding: 18px;
+    background: linear-gradient(135deg, rgba(10,132,255,.10), rgba(52,199,89,.08));
+  }
+  .auth-kicker{
+    font-size: 12px;
+    letter-spacing:.4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .auth-title{
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing:-.4px;
+    margin: 6px 0 6px;
+  }
+  .auth-sub{
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .auth-actions{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 900px){
+    .auth-shell{ grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="auth-shell">
+  <div class="card pad auth-card">
+    <div class="auth-kicker">{{ _("Welcome back") }}</div>
+    <div class="auth-title">{{ _("Log in") }}</div>
+    <div class="auth-sub">{{ _("Track your goals and daily tasks in one place.") }}</div>
+
+    <div style="height:14px;"></div>
+
+    <form method="post">
+      <div class="row">
+        <input class="input" type="email" name="email" placeholder="{{ _('Email') }}" required>
+      </div>
+
+      <div style="height:10px;"></div>
+
+      <div class="row">
+        <input class="input" type="password" name="password" placeholder="{{ _('Password') }}" required>
+      </div>
+
+      <div class="auth-actions">
+        <button class="btn btn-primary" type="submit">{{ _("Login") }}</button>
+        <a class="btn" href="{{ url_for('auth.register') }}" style="text-decoration:none;">
+          {{ _("Create account") }}
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <div class="card pad auth-hero">
+    <div class="auth-kicker">{{ _("Quick tips") }}</div>
+    <div style="height:6px;"></div>
+    <div class="muted">• {{ _("Use your email and password to sign in.") }}</div>
+    <div class="muted">• {{ _("New here? Create an account in seconds.") }}</div>
+    <div class="muted">• {{ _("Your progress syncs across Week, Goals, and Stats.") }}</div>
+  </div>
+</div>
+{% endblock %}
